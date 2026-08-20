@@ -7,4 +7,4 @@ exact, non-relocatable host address.
 
 **Status: planning only.** Nothing is implemented yet. Start with [PLANNING.md](PLANNING.md).
 
-Motivating project: [melee-pc](https://github.com/T3CHNOLOG1C/OpenMelee).
+Motivating project: [OpenMelee](https://github.com/T3CHNOLOG1C/OpenMelee).
