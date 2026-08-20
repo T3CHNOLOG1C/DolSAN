@@ -1,0 +1,22 @@
+diff --git a/compiler-rt/lib/asan/asan_mapping.h b/compiler-rt/lib/asan/asan_mapping.h
+index 33832468..fc821ce5 100644
+--- a/compiler-rt/lib/asan/asan_mapping.h
++++ b/compiler-rt/lib/asan/asan_mapping.h
+@@ -226,7 +226,16 @@
+ #      error "Value below is based on shadow scale = 3."
+ #      error "Original formula was: 0x7FFFFFFF & (~0xFFFULL << SHADOW_SCALE)."
+ #    endif
+-#    define ASAN_SHADOW_OFFSET_CONST 0x000000007fff8000
++#    if defined(DOLSAN_SHADOW_OFFSET)
++// DolSAN: relocate the x86_64 Linux shadow offset so LowMem (everything
++// below this offset, see kLowMemEnd below) grows to cover a consumer's
++// fixed-address emulated memory region instead of colliding with
++// LowShadow/ShadowGap. See extern/dolsan/PLANNING.md and
++// cmake/DolSANGekkoProfile.cmake for what picks this value and why.
++#      define ASAN_SHADOW_OFFSET_CONST DOLSAN_SHADOW_OFFSET
++#    else
++#      define ASAN_SHADOW_OFFSET_CONST 0x000000007fff8000
++#    endif
+ #  endif
+ #endif
+ 
