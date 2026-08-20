@@ -1,2 +1,11 @@
 /build/
 /build-*/
+
+# AI coding tool local state -- machine-specific, never meant to be shared.
+# Project-level instruction files (CLAUDE.md, AGENTS.md, .cursorrules) are
+# intentionally NOT ignored here; only the tools' own local dirs/overrides.
+.claude/
+CLAUDE.local.md
+.cursor/
+.cursorignore
+.codex/
