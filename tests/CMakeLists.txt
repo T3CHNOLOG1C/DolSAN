@@ -43,3 +43,24 @@ dolsan_add_asan_test(test_shadow_layout_selfcheck test_shadow_layout_selfcheck.c
 dolsan_add_asan_test(test_heap_overflow_still_caught test_heap_overflow_still_caught.c)
 set_tests_properties(test_heap_overflow_still_caught PROPERTIES
     PASS_REGULAR_EXPRESSION "AddressSanitizer: heap-buffer-overflow")
+
+# Isolated A/B repro for the real melee-pc stack-use-after-return false
+# positive -- background thread, several-levels-deep call chain, each level
+# reading its own live locals. One binary, two invocations (argv-selected):
+# "clean" (no real bug, must pass) and "buggy" (a real SUAR, must still be
+# caught). See the file's own header comment for the full rationale.
+add_executable(test_stack_use_after_return_deep_chain test_stack_use_after_return_deep_chain.c)
+add_dependencies(test_stack_use_after_return_deep_chain dolsan_resource_dir)
+target_compile_definitions(test_stack_use_after_return_deep_chain PRIVATE ${DOLSAN_TEST_PROFILE_DEFS})
+target_compile_options(test_stack_use_after_return_deep_chain PRIVATE
+    ${DolSAN_ASAN_COMPILE_OPTIONS} -g -O0 -pthread)
+target_link_options(test_stack_use_after_return_deep_chain PRIVATE
+    ${DolSAN_ASAN_LINK_OPTIONS} -pthread)
+
+add_test(NAME test_suar_deep_chain_clean
+    COMMAND test_stack_use_after_return_deep_chain clean)
+
+add_test(NAME test_suar_deep_chain_buggy
+    COMMAND test_stack_use_after_return_deep_chain buggy)
+set_tests_properties(test_suar_deep_chain_buggy PROPERTIES
+    PASS_REGULAR_EXPRESSION "AddressSanitizer: stack-use-after-return")
